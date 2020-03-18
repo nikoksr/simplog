@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// Level is represents logging levels.
 type Level int
 
 const (
@@ -31,14 +32,15 @@ const (
 	defaultFlags = log.LstdFlags | log.Lshortfile
 )
 
-type Simplog struct {
+type simplog struct {
 	name    string
 	verbose bool
 	level   Level
 	loggr   *log.Logger
 }
 
-func New(name string, verbose bool, out io.Writer) *Simplog {
+// New creates a new Simplog instance.
+func New(name string, verbose bool, out io.Writer) *simplog {
 	// Convention to make name always all uppercase
 	name = strings.ToUpper(name)
 
@@ -51,7 +53,7 @@ func New(name string, verbose bool, out io.Writer) *Simplog {
 	}
 
 	l := log.New(io.MultiWriter(outputs...), name, defaultFlags)
-	return &Simplog{
+	return &simplog{
 		name:    name,
 		verbose: verbose,
 		level:   defaultLevel,
@@ -59,93 +61,120 @@ func New(name string, verbose bool, out io.Writer) *Simplog {
 	}
 }
 
-func (s *Simplog) SetLevel(lvl Level) {
+// SetLevel sets the level of the logger.
+func (s *simplog) SetLevel(lvl Level) {
 	s.level = lvl
 }
 
-func (s *Simplog) SetFlags(flag int) {
+// SetFlags sets the flags of the logger.
+func (s *simplog) SetFlags(flag int) {
 	s.loggr.SetFlags(flag)
 }
 
-func (s *Simplog) write(levelTag, msg string) {
+func (s *simplog) write(levelTag, msg string) {
 	_ = s.loggr.Output(3, levelTag+" "+msg)
 }
 
-func (s *Simplog) Debug(v ...interface{}) {
+// Debug logs a debug message in style of fmt.Print
+func (s *simplog) Debug(v ...interface{}) {
 	if Debug >= s.level {
 		s.write(debugTag, fmt.Sprint(v...))
 	}
 }
-func (s *Simplog) Debugln(v ...interface{}) {
+
+// Debugln logs a debug message in style of fmt.Println
+func (s *simplog) Debugln(v ...interface{}) {
 	if Debug >= s.level {
 		s.write(debugTag, fmt.Sprintln(v...))
 	}
 }
-func (s *Simplog) Debugf(format string, v ...interface{}) {
+
+// Debugf logs a debug message in style of fmt.Printf
+func (s *simplog) Debugf(format string, v ...interface{}) {
 	if Debug >= s.level {
 		s.write(debugTag, fmt.Sprintf(format, v...))
 	}
 }
 
-func (s *Simplog) Info(v ...interface{}) {
+// Info logs a info message in style of fmt.Print
+func (s *simplog) Info(v ...interface{}) {
 	if Info >= s.level {
 		s.write(infoTag, fmt.Sprint(v...))
 	}
 }
-func (s *Simplog) Infoln(v ...interface{}) {
+
+// Infoln logs a info message in style of fmt.Println
+func (s *simplog) Infoln(v ...interface{}) {
 	if Info >= s.level {
 		s.write(infoTag, fmt.Sprintln(v...))
 	}
 }
-func (s *Simplog) Infof(format string, v ...interface{}) {
+
+// Infof logs a info message in style of fmt.Printf
+func (s *simplog) Infof(format string, v ...interface{}) {
 	if Info >= s.level {
 		s.write(infoTag, fmt.Sprintf(format, v...))
 	}
 }
 
-func (s *Simplog) Warning(v ...interface{}) {
+// Warning logs a warning message in style of fmt.Print
+func (s *simplog) Warning(v ...interface{}) {
 	if Warning >= s.level {
 		s.write(warningTag, fmt.Sprint(v...))
 	}
 }
-func (s *Simplog) Warningln(v ...interface{}) {
+
+// Warningln logs a warning message in style of fmt.Println
+func (s *simplog) Warningln(v ...interface{}) {
 	if Warning >= s.level {
 		s.write(warningTag, fmt.Sprintln(v...))
 	}
 }
-func (s *Simplog) Warningf(format string, v ...interface{}) {
+
+// Warningf logs a warning message in style of fmt.Printf
+func (s *simplog) Warningf(format string, v ...interface{}) {
 	if Warning >= s.level {
 		s.write(warningTag, fmt.Sprintf(format, v...))
 	}
 }
 
-func (s *Simplog) Error(v ...interface{}) {
+// Error logs a error message in style of fmt.Print
+func (s *simplog) Error(v ...interface{}) {
 	if Error >= s.level {
 		s.write(errorTag, fmt.Sprint(v...))
 	}
 }
-func (s *Simplog) Errorln(v ...interface{}) {
+
+// Errorln logs a error message in style of fmt.Println
+func (s *simplog) Errorln(v ...interface{}) {
 	if Error >= s.level {
 		s.write(errorTag, fmt.Sprintln(v...))
 	}
 }
-func (s *Simplog) Errorf(format string, v ...interface{}) {
+
+// Errorf logs a error message in style of fmt.Printf
+func (s *simplog) Errorf(format string, v ...interface{}) {
 	if Error >= s.level {
 		s.write(errorTag, fmt.Sprintf(format, v...))
 	}
 }
 
-func (s *Simplog) Fatal(v ...interface{}) {
+// Fatal logs a fatal message in style of fmt.Print
+func (s *simplog) Fatal(v ...interface{}) {
 	if Fatal >= s.level {
 		s.write(fatalTag, fmt.Sprint(v...))
 	}
 }
-func (s *Simplog) Fatalln(v ...interface{}) {
+
+// Fatalln logs a fatal message in style of fmt.Println
+func (s *simplog) Fatalln(v ...interface{}) {
 	if Fatal >= s.level {
 		s.write(fatalTag, fmt.Sprintln(v...))
 	}
 }
-func (s *Simplog) Fatalf(format string, v ...interface{}) {
+
+// Fatalf logs a fatal message in style of fmt.Printf
+func (s *simplog) Fatalf(format string, v ...interface{}) {
 	if Fatal >= s.level {
 		s.write(fatalTag, fmt.Sprintf(format, v...))
 	}
