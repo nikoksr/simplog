@@ -1,4 +1,4 @@
-package Simplog
+package simplog
 
 import (
 	"fmt"
