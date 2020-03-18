@@ -44,9 +44,11 @@ type Simplog struct {
 }
 
 // New creates a new Simplog instance.
+//
+// If verbose is true, log messages get printed to stdout
 func New(name string, verbose bool, out io.Writer) *Simplog {
 	// Convention to make name always all uppercase
-	name = strings.ToUpper(name)
+	name = strings.ToUpper(name) + " "
 
 	// Create list of outputs. Default will of course be the given one.
 	outputs := []io.Writer{out}
@@ -66,11 +68,19 @@ func New(name string, verbose bool, out io.Writer) *Simplog {
 }
 
 // SetLevel sets the level of the logger.
+//
+// Quiet   = -1
+// Debug   =  0
+// Info    =  1
+// Warning =  2
+// Error   =  3
+// Fatal   =  4
 func (s *Simplog) SetLevel(lvl Level) {
 	s.level = lvl
 }
 
 // SetFlags sets the flags of the logger.
+// See: https://godoc.org/github.com/timehop/golog/log#pkg-constants
 func (s *Simplog) SetFlags(flag int) {
 	s.loggr.SetFlags(flag)
 }
