@@ -1,8 +1,8 @@
 <div align="center">
-<img 
-    width=50% 
-    src="images/gopher-bug.svg" 
-    alt="gopher bug"
+<img
+    width=40%
+    src="images/gopher-bug.svg"
+    alt="proji logo"
 />
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/nikoksr/simplog)](https://goreportcard.com/report/github.com/nikoksr/simplog)
@@ -19,9 +19,10 @@
 
 #### About
 
-<p>Simplog was created due to the unsuccessful search for a small and simple logging system. I needed a system that's exactly in the middle between 'fits-my-needs' and 'not-overkill'. Besides that I just wanted to write a logging library myself for fun. 
+<p>Simplog was created due to the unsuccessful search for a small and simple logging system. I needed a system that's exactly in the middle between 'fits-my-needs' and 'not-overkill'. Besides that I just wanted to write a logging library myself for fun.
 
 If you like it and/or if it is useful for you, it has already more than fulfilled its purpose. Contributions are still welcome but just remember that this logger is intentionally kept simple.
+
 </p>
 
 #### Install <a id="install"></a>
@@ -60,11 +61,9 @@ log.Debugf("%d should be equal to %d.\n", aNumber, anotherNumber)
 
 #### Example Output
 
-```
-CORE 2020/03/18 17:13:24 main.go:24: INFO You're awesome!
-CORE 2020/03/18 17:13:24 main.go:26: WARN Coffee is almost empty.
-CORE 2020/03/18 17:13:25 main.go:28: DEBUG 17 should be equal to 9.
-```
+    CORE 2020/03/18 17:13:24 main.go:24: INFO You're awesome!
+    CORE 2020/03/18 17:13:24 main.go:26: WARN Coffee is almost empty.
+    CORE 2020/03/18 17:13:25 main.go:28: DEBUG 17 should be equal to 9.
 
 #### Credits
 
