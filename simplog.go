@@ -6,9 +6,10 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 )
 
-// Level is represents logging levels.
+// Level represents the logging level.
 type Level int
 
 const (
@@ -32,6 +33,9 @@ const (
 	defaultFlags = log.LstdFlags | log.Lshortfile
 )
 
+var writeLock sync.Mutex
+
+// Simplog represents an active logger object.
 type Simplog struct {
 	name    string
 	verbose bool
@@ -71,111 +75,85 @@ func (s *Simplog) SetFlags(flag int) {
 	s.loggr.SetFlags(flag)
 }
 
-func (s *Simplog) write(levelTag, msg string) {
-	_ = s.loggr.Output(3, levelTag+" "+msg)
+func (s *Simplog) write(level Level, levelTag, msg string) {
+	if s.level >= level {
+		writeLock.Lock()
+		defer writeLock.Unlock()
+		_ = s.loggr.Output(3, levelTag+" "+msg)
+	}
 }
 
 // Debug logs a debug message in style of fmt.Print
 func (s *Simplog) Debug(v ...interface{}) {
-	if Debug >= s.level {
-		s.write(debugTag, fmt.Sprint(v...))
-	}
+	s.write(Debug, debugTag, fmt.Sprint(v...))
 }
 
 // Debugln logs a debug message in style of fmt.Println
 func (s *Simplog) Debugln(v ...interface{}) {
-	if Debug >= s.level {
-		s.write(debugTag, fmt.Sprintln(v...))
-	}
+	s.write(Debug, debugTag, fmt.Sprintln(v...))
 }
 
 // Debugf logs a debug message in style of fmt.Printf
 func (s *Simplog) Debugf(format string, v ...interface{}) {
-	if Debug >= s.level {
-		s.write(debugTag, fmt.Sprintf(format, v...))
-	}
+	s.write(Debug, debugTag, fmt.Sprintf(format, v...))
 }
 
 // Info logs a info message in style of fmt.Print
 func (s *Simplog) Info(v ...interface{}) {
-	if Info >= s.level {
-		s.write(infoTag, fmt.Sprint(v...))
-	}
+	s.write(Info, infoTag, fmt.Sprint(v...))
 }
 
 // Infoln logs a info message in style of fmt.Println
 func (s *Simplog) Infoln(v ...interface{}) {
-	if Info >= s.level {
-		s.write(infoTag, fmt.Sprintln(v...))
-	}
+	s.write(Info, infoTag, fmt.Sprintln(v...))
 }
 
 // Infof logs a info message in style of fmt.Printf
 func (s *Simplog) Infof(format string, v ...interface{}) {
-	if Info >= s.level {
-		s.write(infoTag, fmt.Sprintf(format, v...))
-	}
+	s.write(Info, infoTag, fmt.Sprintf(format, v...))
 }
 
 // Warning logs a warning message in style of fmt.Print
 func (s *Simplog) Warning(v ...interface{}) {
-	if Warning >= s.level {
-		s.write(warningTag, fmt.Sprint(v...))
-	}
+	s.write(Warning, warningTag, fmt.Sprint(v...))
 }
 
 // Warningln logs a warning message in style of fmt.Println
 func (s *Simplog) Warningln(v ...interface{}) {
-	if Warning >= s.level {
-		s.write(warningTag, fmt.Sprintln(v...))
-	}
+	s.write(Warning, warningTag, fmt.Sprintln(v...))
 }
 
 // Warningf logs a warning message in style of fmt.Printf
 func (s *Simplog) Warningf(format string, v ...interface{}) {
-	if Warning >= s.level {
-		s.write(warningTag, fmt.Sprintf(format, v...))
-	}
+	s.write(Warning, warningTag, fmt.Sprintf(format, v...))
 }
 
 // Error logs a error message in style of fmt.Print
 func (s *Simplog) Error(v ...interface{}) {
-	if Error >= s.level {
-		s.write(errorTag, fmt.Sprint(v...))
-	}
+	s.write(Error, errorTag, fmt.Sprint(v...))
 }
 
 // Errorln logs a error message in style of fmt.Println
 func (s *Simplog) Errorln(v ...interface{}) {
-	if Error >= s.level {
-		s.write(errorTag, fmt.Sprintln(v...))
-	}
+	s.write(Error, errorTag, fmt.Sprintln(v...))
 }
 
 // Errorf logs a error message in style of fmt.Printf
 func (s *Simplog) Errorf(format string, v ...interface{}) {
-	if Error >= s.level {
-		s.write(errorTag, fmt.Sprintf(format, v...))
-	}
+	s.write(Error, errorTag, fmt.Sprintf(format, v...))
 }
 
 // Fatal logs a fatal message in style of fmt.Print
 func (s *Simplog) Fatal(v ...interface{}) {
-	if Fatal >= s.level {
-		s.write(fatalTag, fmt.Sprint(v...))
-	}
+	s.write(Fatal, fatalTag, fmt.Sprint(v...))
 }
 
 // Fatalln logs a fatal message in style of fmt.Println
 func (s *Simplog) Fatalln(v ...interface{}) {
-	if Fatal >= s.level {
-		s.write(fatalTag, fmt.Sprintln(v...))
-	}
+	s.write(Fatal, fatalTag, fmt.Sprintln(v...))
 }
 
 // Fatalf logs a fatal message in style of fmt.Printf
 func (s *Simplog) Fatalf(format string, v ...interface{}) {
-	if Fatal >= s.level {
-		s.write(fatalTag, fmt.Sprintf(format, v...))
-	}
+	s.write(Fatal, fatalTag, fmt.Sprintf(format, v...))
 }
