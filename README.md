@@ -9,7 +9,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/643b7cce9fd2491e9fde38de6e1c58ad)](https://www.codacy.com/manual/nikoksr/proji?utm_source=github.com&utm_medium=referral&utm_content=nikoksr/proji&utm_campaign=Badge_Grade)
 [![Maintainability](https://api.codeclimate.com/v1/badges/c9295422ae29fb489503/maintainability)](https://codeclimate.com/github/nikoksr/simplog/maintainability)
 [![Actions Status](https://github.com/nikoksr/simplog/workflows/Go-Test/badge.svg)](https://github.com/{owner}/{repo}/actions)
-[![GoDoc](https://godoc.org/github.com/nikoksr/simplog?status.svg)](https://godoc.org/github.com/nikoksr/simplog)
+[![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat)](https://pkg.go.dev/github.com/nikoksr/simplog)
 
 </div>
 
