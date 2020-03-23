@@ -19,7 +19,7 @@
 
 #### About
 
-<p>Simplog was created due to the unsuccessful search for a small and simple logging system. I needed a system that's exactly in the middle between 'fits-my-needs' and 'not-overkill'. Besides that I just wanted to write a logging library myself for fun.
+<p>Simplog was created due to the unsuccessful search for a small and simple logging system. I needed a system that's exactly in the middle between 'does-what-it-should' and 'no-overkill'. Besides that I just wanted to write a logging library myself for fun.
 
 If you like it and/or if it is useful for you, it has already more than fulfilled its purpose. Contributions are still welcome but just remember that this logger is intentionally kept simple.
 
@@ -47,7 +47,7 @@ if err != nil {
 }
 
 // Set log level to warning
-log.SetLevel(3)
+log.SetLevel(simplog.Warning)
 
 // fmt.Print style
 log.Info("You're awesome!\n")
