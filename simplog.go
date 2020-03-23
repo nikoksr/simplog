@@ -29,7 +29,7 @@ const (
 )
 
 const (
-	defaultLevel = Info
+	defaultLevel = Fatal
 	defaultFlags = log.LstdFlags | log.Lshortfile
 )
 
