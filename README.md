@@ -49,11 +49,9 @@ if err != nil {
 // Set lowest log level to info
 log.SetLevel(simplog.Info)
 
-// fmt.Print style
-log.Info("You're awesome!\n")
-
-// fmt.Println style
-log.Warningln("Coffee is almost empty.")
+// Log messages with different levels of importance.
+log.Info("You're awesome!")
+log.Warning("Coffee is almost empty.")
 
 // The following message will not be logged because 'Info' was set
 // as the lowest allowed log level.
@@ -65,8 +63,8 @@ log.Warningln("Coffee is almost empty.")
 //  - Error
 //  - Fatal
 // 
-// // fmt.Printf style 
-log.Debugf("%d should be equal to %d.\n", aNumber, anotherNumber)
+// Log messages support fmt.Printf style by default.
+log.Debug("%d should be equal to %d.", aNumber, anotherNumber)
 
 ```
 
