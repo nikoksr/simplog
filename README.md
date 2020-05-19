@@ -46,8 +46,8 @@ if err != nil {
     log.Fatalf("could not create logger %v", err)
 }
 
-// Set log level to warning
-log.SetLevel(simplog.Warning)
+// Set lowest log level to info
+log.SetLevel(simplog.Info)
 
 // fmt.Print style
 log.Info("You're awesome!\n")
@@ -55,15 +55,25 @@ log.Info("You're awesome!\n")
 // fmt.Println style
 log.Warningln("Coffee is almost empty.")
 
-// fmt.Printf style
+// The following message will not be logged because 'Info' was set
+// as the lowest allowed log level.
+//
+// Log Levels (lowest -> highest):
+//  - Debug
+//  - Info
+//  - Warning
+//  - Error
+//  - Fatal
+// 
+// // fmt.Printf style 
 log.Debugf("%d should be equal to %d.\n", aNumber, anotherNumber)
+
 ```
 
 #### Example Output
 
     CORE 2020/03/18 17:13:24 main.go:24: INFO You're awesome!
-    CORE 2020/03/18 17:13:24 main.go:26: WARN Coffee is almost empty.
-    CORE 2020/03/18 17:13:25 main.go:28: DEBUG 17 should be equal to 9.
+    CORE 2020/03/18 17:13:24 main.go:26: WARN Coffee is almost empty.    
 
 #### Credits
 
