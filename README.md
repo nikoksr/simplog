@@ -41,17 +41,17 @@ if err != nil {
 }
 
 // Create logger
-var log = simplog.New("Core", false, f)
+var l = simplog.New("Core", false, f)
 if err != nil {
     log.Fatalf("could not create logger %v", err)
 }
 
 // Set lowest log level to info
-log.SetLevel(simplog.Info)
+l.SetLevel(simplog.Info)
 
 // Log messages with different levels of importance.
-log.Info("You're awesome!")
-log.Warning("Coffee is almost empty.")
+l.Info("You're awesome!")
+l.Warning("Coffee is almost empty.")
 
 // The following message will not be logged because 'Info' was set
 // as the lowest allowed log level.
@@ -64,7 +64,7 @@ log.Warning("Coffee is almost empty.")
 //  - Fatal
 // 
 // Log messages support fmt.Printf style by default.
-log.Debug("%d should be equal to %d.", aNumber, anotherNumber)
+l.Debug("%d should be equal to %d.", aNumber, anotherNumber)
 
 ```
 
