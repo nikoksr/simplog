@@ -14,7 +14,7 @@
 
 </div>
 
-<p align="center">A simple and opinionated library that lets you set up <a href="https://github.com/uber-go/zap">zap</a> quickly.
+<p align="center">A simple and opinionated library that lets you set up and use <a href="https://github.com/uber-go/zap">zap</a> quickly.
 
 <h1></h1>
 
