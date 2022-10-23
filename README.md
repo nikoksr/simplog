@@ -33,7 +33,11 @@ If you need more features, you may use the resulting zap logger directly.
 
 #### Install <a id="install"></a>
 
-`go get -u github.com/nikoksr/simplog`
+```bash
+go get -u github.com/nikoksr/simplog
+```
+
+&nbsp;
 
 #### Example Code
 
@@ -57,6 +61,8 @@ func main() {
   logger.Error("Unable to operate, caffein levels too low.")
 }
 ```
+
+&nbsp;
 
 #### Example Outputs
 
@@ -95,6 +101,8 @@ func main() {
 {"level":"warn","ts":1666528089.4874253,"logger":"simplog","caller":"test-simplog/main.go:13","msg":"Coffee is almost empty!"}
 {"level":"error","ts":1666528089.487434,"logger":"simplog","caller":"test-simplog/main.go:14","msg":"Unable to operate, caffein levels too low."}
 ```
+
+&nbsp;
 
 #### Credits
 
