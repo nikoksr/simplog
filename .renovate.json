@@ -1,0 +1,17 @@
+{
+    "extends": [
+        "config:base"
+    ],
+    "assignees": ["nikoksr"],
+    "labels": ["type/deps"],
+    "packageRules": [
+        {
+            "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+            "automerge": true
+        }
+    ],
+    "postUpdateOptions": [
+        "gomodTidy"
+    ],
+    "dependencyDashboard": false
+}

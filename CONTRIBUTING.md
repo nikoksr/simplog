@@ -1,52 +1,56 @@
-# Contributing to Proji
+## Contributing to simplog
 
-We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
+We want to make contributing to this project as easy and transparent as possible.
 
--   Reporting a bug
--   Discussing the current state of the code
--   Submitting a fix
--   Proposing new features
--   Becoming a maintainer
+## Tests
 
-## We Develop with Github
+Ideally, unit tests should accompany every newly introduced exported function. We're always striving to increase the project's test coverage.
 
-We use github to host code, to track issues and feature requests, as well as accept pull requests.
+If you need to mock an interface in your tests, follow the next steps:
 
-## We Use [Github Flow](https://guides.github.com/introduction/flow/index.html), So All Code Changes Happen Through Pull Requests
+1. Comment the interface you'd like to mock following the example below
 
-Pull requests are the best way to propose changes to the codebase (we use [Github Flow](https://guides.github.com/introduction/flow/index.html)). We actively welcome your pull requests:
+    ```go
+    //go:generate mockery --name=nameOfClient --output=. --case=underscore --inpackage
+    type nameOfClient interface {
+        ...
+    }
+    ```
 
-1.  Fork the repo and create your branch from `master`.
-2.  If you've added code that should be tested, add tests.
-3.  If you've added/removed/updated cli commands, update the documentation.
-4.  Ensure the test suite passes.
-5.  Make sure your code lints.
-6.  Issue that pull request!
+    > Remember to set the `--name` argument accordingly. For real-life implementation examples, check out existing services, for example [fcm](https://github.com/nikoksr/simplog/blob/bda5705e4ee1cbf6b02bbb12679ed597334dee51/service/fcm/fcm.go#L27).
 
-## Any contributions you make will be under the MIT Software License
 
-In short, when you submit code changes, your submissions are understood to be under the same [MIT License](http://choosealicense.com/licenses/mit/) that covers the project. Feel free to contact the maintainers if that's a concern.
+2. Run `make mock`
 
-## Report bugs using Github's [issues](https://github.com/nikoksr/proji/issues)
+    > The first time you'll also need to run `make setup` to download the packages required to generate your mocks
 
-We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/nikoksr/proji/issues/new/choose); it's that easy!
+3. Use the mocked interface in your tests
 
-## Write bug reports with detail, background, and sample code
+    ```go
+	mockClient := newMockNameOfClient(t)
+    ```
 
-Use the [bug report template](https://github.com/nikoksr/proji/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) to report a bug using a Github's issues.
+## Commits
 
-## Request features or changes
+Commit messages should be well formatted, and to make that "standardized", we are using Conventional Commits.
 
-Use the [feature request template](https://github.com/nikoksr/proji/blob/master/.github/ISSUE_TEMPLATE/feature_request.md) to request a new feature using a Github's issues.
+You can follow the documentation on [their website](https://www.conventionalcommits.org).
 
-## Use a Consistent Coding Style
+## Pull Requests
 
-Use [go fmt](https://golang.org/pkg/fmt/) to format your code.
+We actively welcome your pull requests.
+
+1. Fork the repo and create your branch from `main`.
+2. If you've added code that should be tested, add tests.
+3. If you've changed or added exported functions or types, document them.
+4. Ensure the test suite passes (`make ci`).
+
+## Issues
+
+We use GitHub issues to track public bugs. Please ensure your description is clear and has sufficient instructions to be
+able to reproduce the issue.
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under its MIT License.
-
-## References
-
-This document was adapted from the open-source contribution guidelines for [Facebook's Draft](https://github.com/facebook/draft-js/blob/a9316a723f9e918afde44dea68b5f9f39b7d9b00/CONTRIBUTING.md)
+By contributing to simplog, you agree that your contributions will be licensed under the LICENSE file in the root
+directory of this source tree.

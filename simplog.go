@@ -1,123 +1,187 @@
 package simplog
 
 import (
-	"fmt"
-	"io"
-	"log"
-	"os"
-	"strings"
+	"context"
 	"sync"
+
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
-// Level represents the logging level.
-type Level int
+type (
+	// Options are the options for the logger.
+	Options struct {
+		// Debug enables debug logging.
+		Debug bool
 
-const (
-	Debug Level = iota
-	Info
-	Warning
-	Error
-	Fatal
-)
+		// IsServer indicates whether the logger is used by a server or a client.
+		IsServer bool
 
-const (
-	debugTag   = "DEBUG"
-	infoTag    = "INFO"
-	warningTag = "WARN"
-	errorTag   = "ERROR"
-	fatalTag   = "FATAL"
-)
-
-const (
-	defaultLevel = Fatal
-	defaultFlags = log.LstdFlags | log.Lshortfile
-)
-
-var writeLock sync.Mutex
-
-// Simplog represents an active logger object.
-type Simplog struct {
-	name    string
-	verbose bool
-	level   Level
-	loggr   *log.Logger
-}
-
-// New creates a new Simplog instance.
-//
-// If verbose is true, log messages get printed to stdout
-func New(name string, verbose bool, out io.Writer) *Simplog {
-	// Convention to make name always all uppercase
-	name = strings.ToUpper(name) + " "
-
-	// Create list of outputs. Default will of course be the given one.
-	outputs := []io.Writer{out}
-
-	// If verbosity is wanted, stdout will be added as output
-	if verbose {
-		outputs = append(outputs, os.Stdout)
+		// DisableStacktrace disables the stacktrace.
+		DisableStacktrace bool
 	}
 
-	l := log.New(io.MultiWriter(outputs...), name, defaultFlags)
-	return &Simplog{
-		name:    name,
-		verbose: verbose,
-		level:   defaultLevel,
-		loggr:   l,
+	symbols = struct {
+		fromZapLevel map[zapcore.Level]string
+		mu           sync.RWMutex
+	}
+)
+
+const (
+	defaultDebugSymbol   = "🐞"
+	defaultInfoSymbol    = "💡"
+	defaultWarningSymbol = "⚠️ "
+	defaultErrorSymbol   = "🔥"
+)
+
+var (
+	defaultOptions = &Options{
+		Debug:             false,
+		IsServer:          false,
+		DisableStacktrace: true,
+	}
+
+	// activeSymbols is used to store the active symbols. It is used to allow for changing the symbols at runtime. It
+	// is used by the visualLevelEncoder to encode the level to a human-readable prefix.
+	activeSymbols = symbols{
+		fromZapLevel: map[zapcore.Level]string{
+			zapcore.DebugLevel: defaultDebugSymbol,
+			zapcore.InfoLevel:  defaultInfoSymbol,
+			zapcore.WarnLevel:  defaultWarningSymbol,
+			zapcore.ErrorLevel: defaultErrorSymbol,
+		},
+	}
+)
+
+// visualLevelEncoder is a zapcore.Encoder that encodes a zapcore.Level to a human-readable prefix.
+func visualLevelEncoder(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
+	enc.AppendString(activeSymbols.fromZapLevel[level])
+}
+
+func productionCLIEncoderConfig() zapcore.EncoderConfig {
+	return zapcore.EncoderConfig{
+		FunctionKey:      zapcore.OmitKey,
+		LevelKey:         "L",
+		MessageKey:       "M",
+		LineEnding:       zapcore.DefaultLineEnding,
+		EncodeLevel:      visualLevelEncoder,
+		ConsoleSeparator: " ",
 	}
 }
 
-// SetLevel sets the level of the logger.
-//
-// Quiet   = -1
-// Debug   =  0
-// Info    =  1
-// Warning =  2
-// Error   =  3
-// Fatal   =  4
-func (s *Simplog) SetLevel(lvl Level) {
-	s.level = lvl
-}
+func newLogger(name string, opts *Options) *zap.SugaredLogger {
+	if opts == nil {
+		opts = defaultOptions
+	}
 
-// SetFlags sets the flags of the logger.
-// See: https://godoc.org/github.com/timehop/golog/log#pkg-constants
-func (s *Simplog) SetFlags(flag int) {
-	s.loggr.SetFlags(flag)
-}
+	var config zap.Config
 
-// Write log message to outputs.
-func (s *Simplog) write(level Level, levelTag, msg string) {
-	if s.level >= level {
-		if !strings.HasSuffix(msg, "\n") {
-			msg += "\n"
+	// In debug mode, client and server applications use the same configuration.
+	if opts.Debug {
+		config = zap.NewDevelopmentConfig()
+	} else {
+		config = zap.NewProductionConfig()
+
+		// Special case for client production logging. Servers should use the default production config - json encoding
+		if !opts.IsServer {
+			config.Encoding = "console"
+			config.EncoderConfig = productionCLIEncoderConfig()
 		}
-		writeLock.Lock()
-		defer writeLock.Unlock()
-		_ = s.loggr.Output(3, levelTag+" "+msg)
 	}
+
+	// Optionally disable stacktrace.
+	if opts.DisableStacktrace {
+		config.DisableStacktrace = true
+	}
+
+	logger, err := config.Build()
+	if err != nil {
+		logger = zap.NewNop()
+	}
+
+	// Add the name to the logger.
+	logger = logger.Named(name)
+
+	return logger.Sugar()
 }
 
-// Debug logs a debug message in style of fmt.Printf. New line will be automatically appended.
-func (s *Simplog) Debug(format string, v ...interface{}) {
-	s.write(Debug, debugTag, fmt.Sprintf(format, v...))
+func defaultLogger() *zap.SugaredLogger {
+	return newLogger("simplog-default", defaultOptions)
 }
 
-// Info logs a info message in style of fmt.Printf. New line will be automatically appended.
-func (s *Simplog) Info(format string, v ...interface{}) {
-	s.write(Info, infoTag, fmt.Sprintf(format, v...))
+// NewWithOptions returns a new logger with the given options. If the options are nil, the default logger is returned.
+func NewWithOptions(opts *Options) *zap.SugaredLogger {
+	return newLogger("simplog", opts)
 }
 
-// Warning logs a warning message in style of fmt.Printf. New line will be automatically appended.
-func (s *Simplog) Warning(format string, v ...interface{}) {
-	s.write(Warning, warningTag, fmt.Sprintf(format, v...))
+// NewClientLogger returns a new logger that's meant to be used by client-type applications. It uses a human-readable
+// format.
+func NewClientLogger(debug bool) *zap.SugaredLogger {
+	return NewWithOptions(&Options{
+		Debug:             debug,
+		IsServer:          false,
+		DisableStacktrace: true,
+	})
 }
 
-// Error logs a error message in style of fmt.Printf. New line will be automatically appended.
-func (s *Simplog) Error(format string, v ...interface{}) {
-	s.write(Error, errorTag, fmt.Sprintf(format, v...))
+// NewServerLogger returns a new logger that's meant to be used by servers. It uses structured logging when run in
+// production, and a human-readable format when run in development.
+func NewServerLogger(debug bool) *zap.SugaredLogger {
+	return NewWithOptions(&Options{
+		Debug:             debug,
+		IsServer:          true,
+		DisableStacktrace: true,
+	})
 }
 
-// Fatal logs a fatal message in style of fmt.Printf. New line will be automatically appended.
-func (s *Simplog) Fatal(format string, v ...interface{}) {
-	s.write(Fatal, fatalTag, fmt.Sprintf(format, v...))
+// As recommended by 'revive' linter.
+type contextKey string
+
+var loggerKey contextKey = "simplog"
+
+// WithLogger returns a new context.Context with the given logger.
+func WithLogger(ctx context.Context, logger *zap.SugaredLogger) context.Context {
+	return context.WithValue(ctx, loggerKey, logger)
+}
+
+// FromContext returns the logger from the given context. If the context does not contain a logger, the default logger
+// is returned. If the context is nil, the default logger is returned.
+func FromContext(ctx context.Context) *zap.SugaredLogger {
+	if logger, ok := ctx.Value(loggerKey).(*zap.SugaredLogger); ok {
+		return logger
+	}
+
+	return defaultLogger()
+}
+
+// SetDebugSymbol sets the debug symbol.
+func SetDebugSymbol(symbol string) {
+	activeSymbols.mu.Lock()
+	defer activeSymbols.mu.Unlock()
+
+	activeSymbols.fromZapLevel[zapcore.DebugLevel] = symbol
+}
+
+// SetInfoSymbol sets the info symbol.
+func SetInfoSymbol(symbol string) {
+	activeSymbols.mu.Lock()
+	defer activeSymbols.mu.Unlock()
+
+	activeSymbols.fromZapLevel[zapcore.InfoLevel] = symbol
+}
+
+// SetWarnSymbol sets the warning symbol.
+func SetWarnSymbol(symbol string) {
+	activeSymbols.mu.Lock()
+	defer activeSymbols.mu.Unlock()
+
+	activeSymbols.fromZapLevel[zapcore.WarnLevel] = symbol
+}
+
+// SetErrorSymbol sets the error symbol.
+func SetErrorSymbol(symbol string) {
+	activeSymbols.mu.Lock()
+	defer activeSymbols.mu.Unlock()
+
+	activeSymbols.fromZapLevel[zapcore.ErrorLevel] = symbol
 }
