@@ -6,7 +6,7 @@
 />
 
 ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/nikoksr/simplog?color=success&label=version&sort=semver)
-[![codecov](https://codecov.io/gh/nikoksr/simplog/branch/master/graph/badge.svg?token=NY51VEB9GZ)](https://codecov.io/gh/nikoksr/simplog)
+[![codecov](https://codecov.io/gh/nikoksr/simplog/branch/main/graph/badge.svg?token=NY51VEB9GZ)](https://codecov.io/gh/nikoksr/simplog)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nikoksr/simplog)](https://goreportcard.com/report/github.com/nikoksr/simplog)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/2d2f6bfb58834346b790dd35657f1a33)](https://www.codacy.com/gh/nikoksr/simplog/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nikoksr/simplog&amp;utm_campaign=Badge_Grade)
 [![Maintainability](https://api.codeclimate.com/v1/badges/c9295422ae29fb489503/maintainability)](https://codeclimate.com/github/nikoksr/simplog/maintainability)
