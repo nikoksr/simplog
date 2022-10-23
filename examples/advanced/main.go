@@ -1,3 +1,4 @@
+// main implements an advanced simplog example.
 package main
 
 import (
