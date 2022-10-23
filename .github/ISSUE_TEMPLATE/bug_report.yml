@@ -6,9 +6,9 @@ body:
 - type: markdown
   attributes:
   value: |
-  Before you begin to fill out the form, make sure you have actually found a bug.
-  If you're not sure then please create a [discussion](https://github.com/nikoksr/simplog/discussions) first.
-  If you have questions or want help with simplog, then also please create a [discussion](https://github.com/nikoksr/simplog/discussions).
+    Before you begin to fill out the form, make sure you have actually found a bug.
+    If you're not sure then please create a [discussion](https://github.com/nikoksr/simplog/discussions) first.
+    If you have questions or want help with simplog, then also please create a [discussion](https://github.com/nikoksr/simplog/discussions).
 
 - type: dropdown
   id: regression-error

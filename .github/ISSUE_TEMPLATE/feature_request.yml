@@ -15,8 +15,8 @@ body:
   attributes:
   label: If you have any ideas on how this should be implemented, please tell us here.
   description: |
-  In case you've already dug into existing options or source code and have ideas, mention them here.
-  Try to keep implementation ideas separate from requirements.
+    In case you've already dug into existing options or source code and have ideas, mention them here.
+    Try to keep implementation ideas separate from requirements.
   validations:
   required: true
 
