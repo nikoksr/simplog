@@ -182,6 +182,21 @@ func TestVisualLevelEncoder(t *testing.T) {
 		t.Fatalf("build logger: %v", err)
 	}
 
+	// Stopping fatal from exiting the test. We need to recover from the panic, zapcore.WriteThenNoop is not supported
+	// by fatal.
+	logger = logger.WithOptions(zap.WithFatalHook(zapcore.WriteThenPanic))
+
+	// Use the following function to test panicking logs.
+	logWithRecovery := func(log func(string, ...zapcore.Field), msg string, fields ...zapcore.Field) {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Fatal("expected panic")
+			}
+		}()
+
+		log("test")
+	}
+
 	// Log a message at each level and check the buffer for the expected output.
 	// Debug
 	logger.Debug("test")
@@ -208,6 +223,26 @@ func TestVisualLevelEncoder(t *testing.T) {
 	logger.Error("test")
 	if !strings.Contains(buf.String(), activeSymbols.fromZapLevel[zap.ErrorLevel]) {
 		t.Fatal("expected error symbol in log message")
+	}
+	buf.Reset()
+
+	logWithRecovery(logger.Fatal, "test")
+	if !strings.Contains(buf.String(), activeSymbols.fromZapLevel[zap.FatalLevel]) {
+		t.Fatal("expected fatal symbol in log message")
+	}
+	buf.Reset()
+
+	// Panic
+	logWithRecovery(logger.Panic, "test")
+	if !strings.Contains(buf.String(), activeSymbols.fromZapLevel[zap.PanicLevel]) {
+		t.Fatal("expected panic symbol in log message")
+	}
+	buf.Reset()
+
+	// DPanic
+	logWithRecovery(logger.DPanic, "test")
+	if !strings.Contains(buf.String(), activeSymbols.fromZapLevel[zap.DPanicLevel]) {
+		t.Fatal("expected dpanic symbol in log message")
 	}
 	buf.Reset()
 
@@ -248,4 +283,30 @@ func TestVisualLevelEncoder(t *testing.T) {
 		t.Fatalf("expected error symbol %q in log message: %s", errorSymbol, buf.String())
 	}
 	buf.Reset()
+
+	// Fatal
+	fatalSymbol := "<!!F!!>"
+	SetFatalSymbol(fatalSymbol)
+	logWithRecovery(logger.Fatal, "test")
+	if !strings.Contains(buf.String(), activeSymbols.fromZapLevel[zap.FatalLevel]) {
+		t.Fatalf("expected fatal symbol %q in log message: %s", fatalSymbol, buf.String())
+	}
+	buf.Reset()
+
+	// Panic
+	panicSymbol := "<!!P!!>"
+	SetPanicSymbol(panicSymbol)
+	logWithRecovery(logger.Panic, "test")
+	if !strings.Contains(buf.String(), activeSymbols.fromZapLevel[zap.PanicLevel]) {
+		t.Fatalf("expected panic symbol %q in log message: %s", panicSymbol, buf.String())
+	}
+	buf.Reset()
+
+	// DPanic
+	dpanicSymbol := "<!!DP!!>"
+	SetDPanicSymbol(dpanicSymbol)
+	logWithRecovery(logger.DPanic, "test")
+	if !strings.Contains(buf.String(), activeSymbols.fromZapLevel[zap.DPanicLevel]) {
+		t.Fatalf("expected dpanic symbol %q in log message: %s", dpanicSymbol, buf.String())
+	}
 }
