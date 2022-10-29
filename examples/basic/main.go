@@ -18,5 +18,6 @@ func main() {
 
 	serverLogger.Info("You're awesome!")
 	serverLogger.Warn("Coffee is almost empty!")
-	serverLogger.Error("Unable to operate, caffein levels too low.")
+	serverLogger.Error("Caffeine levels too low.")
+	serverLogger.Panic("Unable to operate, no caffeine left.")
 }
