@@ -23,7 +23,7 @@ type (
 
 	symbols = struct {
 		fromZapLevel map[zapcore.Level]string
-		mu           sync.RWMutex
+		mu           sync.Mutex
 	}
 )
 
@@ -32,6 +32,9 @@ const (
 	defaultInfoSymbol    = "💡"
 	defaultWarningSymbol = "⚠️ "
 	defaultErrorSymbol   = "🔥"
+	defaultFatalSymbol   = "💀"
+	defaultPanicSymbol   = "🚨"
+	defaultDPanicSymbol  = "🚨"
 )
 
 var (
@@ -45,10 +48,13 @@ var (
 	// is used by the visualLevelEncoder to encode the level to a human-readable prefix.
 	activeSymbols = symbols{
 		fromZapLevel: map[zapcore.Level]string{
-			zapcore.DebugLevel: defaultDebugSymbol,
-			zapcore.InfoLevel:  defaultInfoSymbol,
-			zapcore.WarnLevel:  defaultWarningSymbol,
-			zapcore.ErrorLevel: defaultErrorSymbol,
+			zapcore.DebugLevel:  defaultDebugSymbol,
+			zapcore.InfoLevel:   defaultInfoSymbol,
+			zapcore.WarnLevel:   defaultWarningSymbol,
+			zapcore.ErrorLevel:  defaultErrorSymbol,
+			zapcore.FatalLevel:  defaultFatalSymbol,
+			zapcore.PanicLevel:  defaultPanicSymbol,
+			zapcore.DPanicLevel: defaultDPanicSymbol,
 		},
 	}
 )
@@ -154,34 +160,43 @@ func FromContext(ctx context.Context) *zap.SugaredLogger {
 	return defaultLogger()
 }
 
+func setSymbol(level zapcore.Level, symbol string) {
+	activeSymbols.mu.Lock()
+	activeSymbols.fromZapLevel[level] = symbol
+	activeSymbols.mu.Unlock()
+}
+
 // SetDebugSymbol sets the debug symbol.
 func SetDebugSymbol(symbol string) {
-	activeSymbols.mu.Lock()
-	defer activeSymbols.mu.Unlock()
-
-	activeSymbols.fromZapLevel[zapcore.DebugLevel] = symbol
+	setSymbol(zapcore.DebugLevel, symbol)
 }
 
 // SetInfoSymbol sets the info symbol.
 func SetInfoSymbol(symbol string) {
-	activeSymbols.mu.Lock()
-	defer activeSymbols.mu.Unlock()
-
-	activeSymbols.fromZapLevel[zapcore.InfoLevel] = symbol
+	setSymbol(zapcore.InfoLevel, symbol)
 }
 
 // SetWarnSymbol sets the warning symbol.
 func SetWarnSymbol(symbol string) {
-	activeSymbols.mu.Lock()
-	defer activeSymbols.mu.Unlock()
-
-	activeSymbols.fromZapLevel[zapcore.WarnLevel] = symbol
+	setSymbol(zapcore.WarnLevel, symbol)
 }
 
 // SetErrorSymbol sets the error symbol.
 func SetErrorSymbol(symbol string) {
-	activeSymbols.mu.Lock()
-	defer activeSymbols.mu.Unlock()
+	setSymbol(zapcore.ErrorLevel, symbol)
+}
 
-	activeSymbols.fromZapLevel[zapcore.ErrorLevel] = symbol
+// SetFatalSymbol sets the fatal symbol.
+func SetFatalSymbol(symbol string) {
+	setSymbol(zapcore.FatalLevel, symbol)
+}
+
+// SetPanicSymbol sets the panic symbol.
+func SetPanicSymbol(symbol string) {
+	setSymbol(zapcore.PanicLevel, symbol)
+}
+
+// SetDPanicSymbol sets the dpanic symbol.
+func SetDPanicSymbol(symbol string) {
+	setSymbol(zapcore.DPanicLevel, symbol)
 }

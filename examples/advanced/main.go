@@ -21,6 +21,9 @@ func main() {
 	simplog.SetInfoSymbol("[INFO]")
 	simplog.SetWarnSymbol("[WARN]")
 	simplog.SetErrorSymbol("[ERROR]")
+	simplog.SetFatalSymbol("[FATAL]")
+	simplog.SetPanicSymbol("[PANIC]")
+	simplog.SetDPanicSymbol("[DPANIC]")
 
 	// Bind the logger to a context
 	ctx := simplog.WithLogger(context.Background(), logger)
